@@ -1,11 +1,7 @@
 package com.mklubo.GithubRepoExplorer.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.mklubo.GithubRepoExplorer.exception.UsernameNotExistsException;
-import com.mklubo.GithubRepoExplorer.model.ErrorResponse;
 import com.mklubo.GithubRepoExplorer.model.UserRepositoryData;
 import com.mklubo.GithubRepoExplorer.service.ExplorerService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,15 +21,10 @@ public class ExploreController {
     }
 
     @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getUserRepositoryData(@PathVariable(name = "username") String username) {
-        try {
-            List<UserRepositoryData> userRepositoryData = explorerService.getUserRepositoryData(username);
-            return ResponseEntity.ok(userRepositoryData);
-        } catch (JsonProcessingException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),e.getMessage()));
-        } catch (UsernameNotExistsException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<List<UserRepositoryData>> getUserRepositoryData(@PathVariable(name = "username") String username) {
+        List<UserRepositoryData> userRepositoryData = explorerService.getUserRepositoryData(username);
+        return ResponseEntity.ok(userRepositoryData);
     }
+
 
 }

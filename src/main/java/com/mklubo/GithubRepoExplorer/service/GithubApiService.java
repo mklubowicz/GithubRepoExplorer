@@ -1,22 +1,34 @@
 package com.mklubo.GithubRepoExplorer.service;
 
+import com.mklubo.GithubRepoExplorer.model.BranchInfo;
+import com.mklubo.GithubRepoExplorer.model.UserRepositoryData;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+
 @Service
 public class GithubApiService {
-    private final RestTemplate restTemplate;
+    private final WebClient webClient;
 
-    public GithubApiService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public GithubApiService(WebClient webClient) {
+        this.webClient = webClient;
     }
 
-    public String getRepositoriesForAUser(String username) {
+    public UserRepositoryData[] getRepositoriesForUser(String username) {
         String uri = String.format("/users/%s/repos",username);
-        return restTemplate.getForObject(uri, String.class);
+        return webClient
+                .get()
+                .uri(uri)
+                .retrieve()
+                .bodyToMono(UserRepositoryData[].class)
+                .block();
     }
-
-    public String getBranchInfoOfRepository(String username, String repositoryName) {
+    public BranchInfo[] getBranchInfoOfRepository(String username, String repositoryName) {
         String uri = String.format("/repos/%s/%s/branches",username,repositoryName);
-        return restTemplate.getForObject(uri,String.class);
+        return webClient
+                .get()
+                .uri(uri)
+                .retrieve()
+                .bodyToMono(BranchInfo[].class)
+                .block();
     }
 }
